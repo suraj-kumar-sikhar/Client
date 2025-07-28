@@ -1,0 +1,18 @@
+.prose img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+.prose pre {
+  overflow-x: auto;
+  background-color: #1e293b;
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+
+.prose table {
+  width: 100%;
+  overflow-x: auto;
+}

@@ -1,0 +1,65 @@
+<div class="relative bg-[#0f172a] text-white min-h-screen px-4 py-8 font-[noto]">
+    <div class="absolute inset-0 bg-gradient-to-t from-transparent via-black/50 to-black z-10"></div>
+    <div class="relative z-20">
+ 
+  <h2 class="text-2xl md:text-3xl font-semibold mb-6 text-center">
+    {{ selectedCategory }}
+  </h2>
+
+  
+  <div class="grid grid-cols-3 md:grid-cols-6 gap-4 mb-8">
+    <div
+      *ngFor="let category of categories"
+      class="bg-[#1e293b] rounded-lg overflow-hidden shadow hover:shadow-lg transition duration-200 cursor-pointer"
+      (click)="selectCategory(category.name)"
+    >
+      <img [src]="category.image" [alt]="category.name" class="w-full h-24 md:h-32 object-cover">
+      <div class="p-2 text-center text-sm md:text-base font-medium">
+        {{ category.name }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Blog Cards -->
+  <div class="space-y-10">
+    <div *ngFor="let blog of blogs" class="flex flex-col md:flex-row items-start gap-5">
+      <div class="flex-1 space-y-1">
+        <p class="text-sm text-blue-400 font-medium">{{ blog.category }}</p>
+        <h3 class="text-xl font-semibold leading-snug">{{ blog.title }}</h3>
+        <p class="text-sm text-gray-400">By {{ blog.author }}</p>
+        <button
+  class="mt-2 inline-block bg-blue-600 hover:bg-blue-700 text-sm px-4 py-1 rounded"
+  [routerLink]="['/blog', blog.id]"
+>
+  Read More
+</button>
+      </div>
+      <img
+        [src]="blog.imageuri"
+        alt="Blog image"
+        class="w-full md:w-60 h-40 object-cover rounded-md border border-slate-600 shadow"
+      />
+    </div>
+  </div>
+
+  <!-- Pagination Controls -->
+  <div class="flex justify-center gap-4 mt-10">
+    <button
+      class="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded text-sm"
+      [disabled]="skip === 0"
+      (click)="prevPage()"
+    >
+      Previous
+    </button>
+
+    <button
+      class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-sm"
+      [disabled]="!hasMore"
+      (click)="nextPage()"
+    >
+      Next
+    </button>
+  </div>
+  </div>
+
+</div>

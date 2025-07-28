@@ -1,0 +1,41 @@
+<div class="min-h-[91.6vh] bg-[#0f172a] flex flex-col items-center justify-center px-4 relative">
+    <div class="absolute inset-0 bg-gradient-to-t from-transparent via-black/50 to-black z-10"></div>
+  <div class="w-screen  max-w-md shadow-xl rounded-xl p-8 relative z-20 mb-30 font-[noto]">
+    <div class="text-center mb-6">
+      <h1 class="text-3xl font-semibold text-white tracking-wide">Welcome back</h1>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" class="space-y-5">
+      <div>
+        <label for="email" class="block text-sm text-gray-300 mb-1">Email</label>
+        <input
+          #email
+          type="email"
+          placeholder="Email"
+          required
+          class="w-full px-4 py-2 rounded-md bg-[#1e293b] text-gray-100 border border-[#334155] focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
+      <div>
+        <label for="password" class="block text-sm text-gray-300 mb-1">Password</label>
+        <input
+          #password
+          type="password"
+          placeholder="Password"
+          required
+          class="w-full px-4 py-2 rounded-md bg-[#1e293b] text-gray-100 border border-[#334155] focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
+      <div class="flex justify-center mt-10">
+        <button
+          type="submit"
+          class="w-[40%] bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-md transition-all duration-200 text-sm font-semibold tracking-wide"
+        >
+          Sign in as Admin
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

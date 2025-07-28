@@ -1,0 +1,49 @@
+[
+  {
+    "type": "text",
+    "name": "title",
+    "label": "Title",
+    "placeholder": "Enter your story title",
+    "required": true,
+    "minLength": 5,
+    "maxLength": 100
+  },
+  {
+    "type": "text",
+    "name": "author",
+    "label": "Author Name",
+    "placeholder": "Your name",
+    "required": true,
+    "minLength": 3,
+    "maxLength": 50
+  },
+  {
+    "type": "email",
+    "name": "email",
+    "label": "Email",
+    "placeholder": "Your email",
+    "required": true
+  },
+  {
+    "type": "select",
+    "name": "category",
+    "label": "Category",
+    "required": true,
+    "minLength": 3,
+    "maxLength": 30,
+    "options": ["Activism", "Memoir", "Culture", "Technology","Science","Travel"]
+  },
+  {
+    "type": "image",
+    "name": "imageuri",
+    "label": "Upload Image"
+  },
+  {
+    "type": "textarea",
+    "name": "content",
+    "label": "Content",
+    "placeholder": "Write your story...",
+    "required": true,
+    "minLength": 100
+  }
+]

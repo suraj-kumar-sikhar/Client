@@ -1,0 +1,30 @@
+<div class="flex items-center justify-between px-10 py-2 font-[noto] relative">
+    <a routerLink="/">
+        <div class="hidden sm:flex items-center">
+            <img src="logo.png" alt="" class="invert w-12">
+            <h1 class="text-white text-2xl ml-2">Echoes</h1>
+        </div>
+    </a>
+
+    <div class="hidden sm:flex gap-14 mr-5">
+        <h1 class="text-white text-xl cursor-pointer"><a routerLink="/">Home</a></h1>
+        <h1 class="text-white text-xl cursor-pointer"><a routerLink="/explore">Explore</a></h1>
+        <h1 class="text-white text-xl cursor-pointer"><a routerLink="/write">Write</a></h1>
+    </div>
+
+    <div>
+        <button class="cursor-pointer bg-[#21364A] rounded-[8px] h-10 px-4 text-amber-50" routerLink="/admin/login">Admin
+                Login</button>
+    </div>
+
+    <div class="sm:hidden">
+        <button (click)="toggleMenu()" class="cursor-pointer text-white text-3xl">&#9776;</button>
+    </div>
+
+    <div *ngIf="isMenuOpen"
+        class="sm:hidden absolute top-full left-0 w-full bg-[#000000] flex flex-col items-center px-10 py-4 space-y-4 z-50">
+        <h1 class="text-white text-xl cursor-pointer"><a routerLink="/">Home</a></h1>
+        <h1 class="text-white text-xl cursor-pointer"><a routerLink="/explore">Explore</a></h1>
+        <h1 class="text-white text-xl cursor-pointer"><a routerLink="/write">Write</a></h1>
+    </div>
+</div>
