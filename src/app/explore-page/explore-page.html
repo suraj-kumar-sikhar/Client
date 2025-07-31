@@ -1,65 +1,164 @@
 <div class="relative bg-[#0f172a] text-white min-h-screen px-4 py-8 font-[noto]">
-    <div class="absolute inset-0 bg-gradient-to-t from-transparent via-black/50 to-black z-10"></div>
-    <div class="relative z-20">
- 
-  <h2 class="text-2xl md:text-3xl font-semibold mb-6 text-center">
-    {{ selectedCategory }}
-  </h2>
+  <div class="absolute inset-0 bg-gradient-to-t from-transparent via-black/50 to-black z-10"></div>
+  <div class="relative z-20 max-w-6xl mx-auto">
 
-  
-  <div class="grid grid-cols-3 md:grid-cols-6 gap-4 mb-8">
-    <div
-      *ngFor="let category of categories"
-      class="bg-[#1e293b] rounded-lg overflow-hidden shadow hover:shadow-lg transition duration-200 cursor-pointer"
-      (click)="selectCategory(category.name)"
-    >
-      <img [src]="category.image" [alt]="category.name" class="w-full h-24 md:h-32 object-cover">
-      <div class="p-2 text-center text-sm md:text-base font-medium">
-        {{ category.name }}
+    <div class="text-center mb-8">
+      <h1 class="text-3xl md:text-4xl font-bold mb-2">Explore Blogs</h1>
+      <h2 class="text-xl md:text-2xl font-semibold text-gray-300">
+        {{ selectedCategoryDisplay }}
+      </h2>
+
+      <button *ngIf="selectedCategory" (click)="clearCategory()"
+        class="mt-3 text-sm text-blue-400 hover:text-blue-300 underline" [disabled]="loading">
+        Show All Categories
+      </button>
+    </div>
+
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 mb-8">
+      <div *ngFor="let category of categories; trackBy: trackByCategoryName"
+        class="bg-[#1e293b] rounded-lg overflow-hidden shadow hover:shadow-lg transition-all duration-200 cursor-pointer transform hover:scale-105"
+        [class.ring-2]="selectedCategory === category.name" [class.ring-blue-500]="selectedCategory === category.name"
+        (click)="selectCategory(category.name)"
+        [attr.aria-label]="'Filter by ' + (category.displayName || category.name)">
+        <div class="relative">
+          <img [src]="category.image" [alt]="category.displayName || category.name"
+            class="w-full h-20 sm:h-24 md:h-32 object-cover" loading="lazy">
+          <div *ngIf="selectedCategory === category.name"
+            class="absolute inset-0 bg-blue-500/20 flex items-center justify-center">
+            <svg class="w-6 h-6 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd"
+                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                clip-rule="evenodd"></path>
+            </svg>
+          </div>
+        </div>
+        <div class="p-2 text-center text-sm md:text-base font-medium">
+          {{ category.displayName || category.name }}
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Blog Cards -->
-  <div class="space-y-10">
-    <div *ngFor="let blog of blogs" class="flex flex-col md:flex-row items-start gap-5">
-      <div class="flex-1 space-y-1">
-        <p class="text-sm text-blue-400 font-medium">{{ blog.category }}</p>
-        <h3 class="text-xl font-semibold leading-snug">{{ blog.title }}</h3>
-        <p class="text-sm text-gray-400">By {{ blog.author }}</p>
+
+    <div *ngIf="loading" class="flex justify-center items-center py-12">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      <span class="ml-3 text-gray-400">Loading blogs...</span>
+    </div>
+
+
+    <div *ngIf="error && !loading" class="text-center py-12">
+      <div class="bg-red-900/20 border border-red-500/50 rounded-lg p-6 max-w-md mx-auto">
+        <svg class="w-12 h-12 text-red-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <h3 class="text-lg font-semibold text-red-400 mb-2">Error Loading Blogs</h3>
+        <p class="text-gray-300 mb-4">{{ error }}</p>
+        <button (click)="fetchBlogs()" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded text-sm font-medium">
+          Try Again
+        </button>
+      </div>
+    </div>
+
+
+    <div *ngIf="!loading && !error && blogs.length === 0" class="text-center py-12">
+      <svg class="w-16 h-16 text-gray-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+        </path>
+      </svg>
+      <h3 class="text-xl font-semibold text-gray-400 mb-2">No Blogs Found</h3>
+      <p class="text-gray-500">
+        <span *ngIf="selectedCategory">No blogs found in this category.</span>
+        <span *ngIf="!selectedCategory">No blogs available at the moment.</span>
+      </p>
+      <button *ngIf="selectedCategory" (click)="clearCategory()"
+        class="mt-4 bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-sm">
+        View All Categories
+      </button>
+    </div>
+
+
+    <div *ngIf="!loading && !error && blogs.length > 0" class="space-y-8">
+      <div *ngFor="let blog of blogs; trackBy: trackByBlogId; let i = index"
+        class="flex flex-col md:flex-row items-start gap-6 bg-[#1e293b]/30 rounded-lg p-6 hover:bg-[#1e293b]/50 transition-all duration-200"
+        [style.animation-delay]="i * 0.1 + 's'">
+        <div class="flex-1 space-y-3">
+          <div class="flex items-center gap-2">
+            <span class="text-sm text-blue-400 font-medium bg-blue-400/10 px-2 py-1 rounded">
+              {{ blog.category }}
+            </span>
+            <span *ngIf="blog.publishedDate" class="text-xs text-gray-500">
+              {{ blog.publishedDate | date:'shortDate' }}
+            </span>
+          </div>
+
+          <h3 class="text-xl md:text-2xl font-semibold leading-snug hover:text-blue-400 transition-colors">
+            {{ blog.title }}
+          </h3>
+
+          <p class="text-sm text-gray-400 flex items-center gap-2">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd">
+              </path>
+            </svg>
+            By {{ blog.author }}
+          </p>
+
+
+
+          <button
+            class="mt-4 inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-sm px-6 py-2 rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-[#0f172a]"
+            [routerLink]="['/blog', blog.id]">
+            Read More
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </button>
+        </div>
+
+        <div class="w-full md:w-72 flex-shrink-0">
+          <img [src]="blog.imageuri" [alt]="blog.title"
+            class="w-full h-48 md:h-40 object-cover rounded-lg border border-slate-600 shadow-lg hover:shadow-xl transition-shadow"
+            loading="lazy" />
+        </div>
+      </div>
+    </div>
+
+
+    <div *ngIf="!loading && !error && blogs.length > 0"
+      class="flex flex-col sm:flex-row justify-between items-center gap-4 mt-12 pt-8 border-t border-gray-700">
+      <div class="text-sm text-gray-400">
+        <span *ngIf="totalBlogs > 0">
+          Showing {{ skip + 1 }} - {{ skip + blogs.length }} of {{ totalBlogs }} blogs
+        </span>
+        <span *ngIf="totalBlogs === 0">
+          Page {{ currentPage }}
+        </span>
+      </div>
+
+      <div class="flex items-center gap-3">
         <button
-  class="mt-2 inline-block bg-blue-600 hover:bg-blue-700 text-sm px-4 py-1 rounded"
-  [routerLink]="['/blog', blog.id]"
->
-  Read More
-</button>
+          class="flex items-center gap-2 bg-gray-600 hover:bg-gray-700 disabled:bg-gray-800 disabled:text-gray-500 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          [disabled]="!canGoPrevious" (click)="prevPage()">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+          Previous
+        </button>
+
+        <span class="text-sm text-gray-400 px-3">
+          Page {{ currentPage }}
+        </span>
+
+        <button
+          class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-800 disabled:text-gray-500 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          [disabled]="!canGoNext" (click)="nextPage()">
+          Next
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        </button>
       </div>
-      <img
-        [src]="blog.imageuri"
-        alt="Blog image"
-        class="w-full md:w-60 h-40 object-cover rounded-md border border-slate-600 shadow"
-      />
     </div>
   </div>
-
-  <!-- Pagination Controls -->
-  <div class="flex justify-center gap-4 mt-10">
-    <button
-      class="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded text-sm"
-      [disabled]="skip === 0"
-      (click)="prevPage()"
-    >
-      Previous
-    </button>
-
-    <button
-      class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-sm"
-      [disabled]="!hasMore"
-      (click)="nextPage()"
-    >
-      Next
-    </button>
-  </div>
-  </div>
-
 </div>

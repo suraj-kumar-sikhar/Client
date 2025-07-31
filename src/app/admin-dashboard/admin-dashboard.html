@@ -8,27 +8,37 @@
 
       <!-- Tab Buttons -->
       <div class="flex items-center space-x-2 text-sm">
-        <button
-          (click)="showApproved = false"
-          [ngClass]="{
-            'bg-blue-600 text-white': !showApproved,
-            'bg-slate-700 text-blue-300 hover:bg-slate-600': showApproved
-          }"
-          class="px-4 py-1 rounded-full font-medium transition border border-blue-500"
-        >
-          Pending <span class="ml-1 px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-300">{{ pendingBlogs.length }}</span>
+        <button (click)="switchTab(false)"
+          [ngClass]="{ 'bg-blue-600 text-white': !showApproved, 'bg-slate-700 text-blue-300 hover:bg-slate-600': showApproved }"
+          class="px-4 py-1 rounded-full font-medium transition border border-blue-500">
+          Pending
         </button>
-        <button
-          (click)="showApproved = true"
-          [ngClass]="{
-            'bg-blue-600 text-white': showApproved,
-            'bg-slate-700 text-blue-300 hover:bg-slate-600': !showApproved
-          }"
-          class="px-4 py-1 rounded-full font-medium transition border border-blue-500"
-        >
-          Approved <span class="ml-1 px-2 py-0.5 rounded-full bg-green-500/20 text-green-300">{{ approvedBlogs.length }}</span>
+        <button (click)="switchTab(true)"
+          [ngClass]="{ 'bg-blue-600 text-white': showApproved, 'bg-slate-700 text-blue-300 hover:bg-slate-600': !showApproved }"
+          class="px-4 py-1 rounded-full font-medium transition border border-blue-500">
+          Approved
         </button>
       </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      <select [(ngModel)]="selectedCategory"
+        class="bg-slate-800 border border-slate-600 text-white px-4 py-2 rounded-md">
+        <option value="">All Categories</option>
+        <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
+      </select>
+
+      <input type="date" [(ngModel)]="startDate"
+        class="bg-slate-800 border border-slate-600 text-white px-4 py-2 rounded-md" />
+
+      <input type="date" [(ngModel)]="endDate"
+        class="bg-slate-800 border border-slate-600 text-white px-4 py-2 rounded-md" />
+
+      <button (click)="applyFilters()"
+        class="bg-blue-600 hover:bg-blue-700 transition px-4 py-2 rounded-md font-medium">
+        Apply Filters
+      </button>
     </div>
 
     <!-- Blogs Table -->
@@ -36,82 +46,116 @@
       <table class="min-w-full text-left text-sm">
         <thead class="bg-[#334155] text-gray-300">
           <tr>
-            <th class="px-6 py-4 font-medium">Title</th>
-            <th class="px-6 py-4 font-medium">Author</th>
-            <th class="px-6 py-4 font-medium">Date</th>
+            <th class="px-6 py-4 font-medium cursor-pointer" (click)="sortBy('title')">
+              Title
+              <span *ngIf="sortColumn === 'title'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+            </th>
+            <th class="px-6 py-4 font-medium cursor-pointer" (click)="sortBy('author')">
+              Author
+              <span *ngIf="sortColumn === 'author'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+            </th>
+            <th class="px-6 py-4 font-medium cursor-pointer" (click)="sortBy('published')">
+              Date
+              <span *ngIf="sortColumn === 'published'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+            </th>
             <th class="px-6 py-4 font-medium">Status</th>
             <th class="px-6 py-4 font-medium text-center">Actions</th>
           </tr>
         </thead>
         <tbody>
-          <tr
-            *ngFor="let blog of filteredBlogs"
-            class="border-b border-slate-700 hover:bg-[#1e2537] transition"
-          >
+          <tr *ngFor="let blog of blogs" class="border-b border-slate-700 hover:bg-[#1e2537] transition">
             <td class="px-6 py-4">{{ blog.title }}</td>
             <td class="px-6 py-4">{{ blog.author }}</td>
             <td class="px-6 py-4">{{ blog.published?.split('T')[0] }}</td>
             <td class="px-6 py-4">
-              <span
-                class="inline-block px-2 py-1 text-xs font-semibold rounded-full"
-                [ngClass]="{
-                  'bg-green-500/10 text-green-300': blog.approved,
-                  'bg-yellow-500/10 text-yellow-300': !blog.approved
-                }"
-              >
+              <span class="inline-block px-2 py-1 text-xs font-semibold rounded-full"
+                [ngClass]="{ 'bg-green-500/10 text-green-300': blog.approved, 'bg-yellow-500/10 text-yellow-300': !blog.approved }">
                 {{ blog.approved ? 'Approved' : 'Pending' }}
               </span>
             </td>
             <td class="px-6 py-4 text-center space-x-2">
               <button *ngIf="!blog.approved" (click)="confirmAction('approve', blog.id)"
-                class="p-2 rounded-full bg-green-600 hover:bg-green-700 transition">
-                <!-- Check Icon -->
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2"
-                  viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
+                class="p-2 px-3 rounded-full bg-green-600 hover:bg-green-700 transition"
+                title="Approve">
+                ✔
               </button>
 
               <button (click)="confirmAction('edit', blog.id)"
-                class="p-2 rounded-full bg-blue-600 hover:bg-blue-700 transition">
-                <!-- Edit Icon -->
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2"
-                  viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M11 5h2m4 4l1 1m-7 7l5-5m-5 5l-1 1-4 1 1-4 1-1" />
-                </svg>
+                class="p-2 px-3 rounded-full bg-blue-600 hover:bg-blue-700 transition"
+                title="Edit">
+                ✎
               </button>
 
               <button (click)="confirmAction('delete', blog.id)"
-                class="p-2 rounded-full bg-red-600 hover:bg-red-700 transition">
-                <!-- Delete Icon -->
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2"
-                  viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                class="p-2 px-3 rounded-full bg-red-600 hover:bg-red-700 transition"
+                title="Delete">
+                ✖
               </button>
+            </td>
+          </tr>
+          
+          <tr *ngIf="blogs.length === 0">
+            <td colspan="5" class="px-6 py-8 text-center text-gray-400">
+              No blogs found. {{ showApproved ? 'No approved blogs yet.' : 'No pending blogs at the moment.' }}
             </td>
           </tr>
         </tbody>
       </table>
     </div>
+
+   
+    <div class="flex justify-center items-center mt-6 space-x-4 text-sm">
+      <button (click)="previousPage()" [disabled]="currentPage === 1"
+        [ngClass]="{ 'opacity-50 cursor-not-allowed': currentPage === 1 }"
+        class="bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-md transition disabled:hover:bg-slate-700">
+        Previous
+      </button>
+
+      <span>Page {{ currentPage }} of {{ totalPages }}</span>
+
+      <button (click)="nextPage()" [disabled]="currentPage >= totalPages"
+        [ngClass]="{ 'opacity-50 cursor-not-allowed': currentPage >= totalPages }"
+        class="bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-md transition disabled:hover:bg-slate-700">
+        Next
+      </button>
+    </div>
   </div>
 
-  <!-- Modal -->
-  <div *ngIf="showModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
+  
+  <div *ngIf="showModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 bg-opacity-60">
     <div class="bg-[#1e293b] p-6 rounded-lg shadow-lg border border-slate-700 w-[90%] max-w-md text-white">
-      <p class="text-lg font-medium text-center mb-4">Are you sure you want to {{ modalAction }} this blog?</p>
+      <p class="text-lg font-medium text-center mb-4">
+        Are you sure you want to {{ modalAction }} this blog?
+      </p>
       <div class="flex justify-center gap-4">
         <button (click)="performAction()"
-          class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md font-medium transition">Yes</button>
+          class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md font-medium transition">
+          Yes
+        </button>
         <button (click)="closeModal()"
-          class="px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-md font-medium transition">No</button>
+          class="px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-md font-medium transition">
+          No
+        </button>
       </div>
     </div>
   </div>
 
-  <!-- Logout Button -->
-  <div class="fixed bottom-4 left-4 z-20 max-w-6xl mx-auto">
+  <div *ngIf="showSuccessPopup" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 bg-opacity-60 transition-opacity duration-300">
+    <div class="bg-[#1e293b] border border-green-500 rounded-2xl shadow-xl p-8 max-w-sm w-full mx-4 transform transition-all duration-300 scale-100">
+      <div class="text-center">
+        <div class="mx-auto flex items-center justify-center w-16 h-16 bg-green-500 rounded-full mb-4">
+          <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+        </div>
+        <h3 class="text-xl font-semibold text-white mb-2">Success!</h3>
+        <p class="text-gray-300">{{ successMessage }}</p>
+      </div>
+    </div>
+  </div>
+
+ 
+  <div class="fixed bottom-4 left-4 z-20">
     <button (click)="logout()"
       class="text-sm px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition shadow-md">
       Logout

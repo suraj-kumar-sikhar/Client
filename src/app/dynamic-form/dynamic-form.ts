@@ -14,6 +14,8 @@ export class DynamicFormComponent implements OnInit {
   @Input() formConfig: any[] = [];
   form!: FormGroup;
   loading = false;
+  showSuccessPopup = false;
+successMessage = '';
 
   constructor(private fb: FormBuilder, private http: HttpClient) {}
 
@@ -75,21 +77,23 @@ export class DynamicFormComponent implements OnInit {
       .catch(err => console.error('Upload Error:', err));
   }
 
-  onSubmit() {
-    if (this.form.invalid) return;
+onSubmit() {
+  if (this.form.invalid) return;
 
-    this.loading = true;
+  this.loading = true;
 
-    this.http.post('http://localhost:8000/api/blogs/create', this.form.value).subscribe({
-      next: () => {
-        alert('Blog submitted successfully!');
-        this.form.reset();
-        this.loading = false;
-      },
-      error: (err) => {
-        alert('Error submitting blog: ' + JSON.stringify(err.error || err));
-        this.loading = false;
-      }
-    });
-  }
+  this.http.post('http://localhost:8000/api/blogs/create', this.form.value).subscribe({
+    next: () => {
+      this.successMessage = 'Blog submitted successfully!';
+      this.showSuccessPopup = true;
+      setTimeout(() => this.showSuccessPopup = false, 3000);
+      this.form.reset();
+      this.loading = false;
+    },
+    error: (err) => {
+      alert('Error submitting blog: ' + JSON.stringify(err.error || err));
+      this.loading = false;
+    }
+  });
+}
 }

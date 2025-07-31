@@ -1,10 +1,13 @@
-<div class="min-h-screen bg-gradient-to-br from-[#0f172a] to-[#1e293b] flex items-center justify-center px-4 py-10 font-[noto]">
-  <div class="w-full max-w-2xl bg-[#1e293b] border border-[#334155] rounded-2xl shadow-xl p-8 transition-all duration-300 hover:shadow-2xl">
-    
+<div
+  class="relative min-h-screen bg-gradient-to-br from-[#0f172a] to-[#1e293b] flex items-center justify-center px-4 py-10 font-[noto]">
+  <div class="absolute inset-0 bg-gradient-to-t from-transparent via-black/50 to-black z-10"></div>
+  <div
+    class="w-full max-w-2xl bg-[#1e293b] border border-[#334155] rounded-2xl shadow-xl p-8 transition-all duration-300 hover:shadow-2xl relative z-30">
+
     <h2 class="text-3xl font-bold text-center text-white mb-8 tracking-wide">Edit Blog</h2>
 
     <form [formGroup]="editForm" (ngSubmit)="onSubmit()" class="space-y-6">
-      
+
       <!-- Title -->
       <div>
         <label class="block text-sm text-gray-300 mb-1">Title</label>
@@ -22,8 +25,13 @@
       <!-- Category -->
       <div>
         <label class="block text-sm text-gray-300 mb-1">Category</label>
-        <input formControlName="category" type="text"
-          class="w-full px-4 py-2 rounded-lg bg-[#0f172a] text-white border border-[#334155] focus:outline-none focus:ring-2 focus:ring-blue-600 transition" />
+        <select formControlName="category"
+          class="w-full px-4 py-2 rounded-lg bg-[#0f172a] text-white border border-[#334155] focus:outline-none focus:ring-2 focus:ring-blue-600 transition">
+          <option value="" disabled>Select A Category</option>
+          @for(option of options; track option){
+          <option [value]="option">{{option}}</option>
+          }
+        </select>
       </div>
 
       <!-- Content -->
@@ -39,6 +47,21 @@
         {{ loading ? 'Saving...' : 'Update Blog' }}
       </button>
     </form>
-    
+
+  </div>
+
+  <!-- Success Popup -->
+  <div *ngIf="showSuccessPopup" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 transition-opacity duration-300">
+    <div class="bg-[#1e293b] border border-green-500 rounded-2xl shadow-xl p-8 max-w-sm w-full mx-4 transform transition-all duration-300 scale-100">
+      <div class="text-center">
+        <div class="mx-auto flex items-center justify-center w-16 h-16 bg-green-500 rounded-full mb-4">
+          <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+        </div>
+        <h3 class="text-xl font-semibold text-white mb-2">Success!</h3>
+        <p class="text-gray-300">Blog updated successfully!</p>
+      </div>
+    </div>
   </div>
 </div>
